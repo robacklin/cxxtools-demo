@@ -1,0 +1,158 @@
+
+xx cxx msgclient.cpp
+
+=================================================================================
+dsserver 
+--expire 60 # enter will be auto removed after N minute (default: 3600 aka 1hr)
+
+reference {
+id 			/* # */
+	item {
+		ref_string 	/* resource title (like Audio or Vidoe) */
+		expire 		/* expireThread checks this */
+		secure_id 	/* prevent other from removing or updaing our entry */
+		location {
+			ip 			/* default 127.0.0.1 */
+			port 			/* 5001 */
+		}
+	}
+}
+
+typedef map<std::string, std::string> mapIpAddress /* Audio@127.0.0.1 or NilAudio@10.241.0.1 */
+typedef map<uint, mapIpAddress> mapReference /* 101:Ref1 101:Ref2 */
+
+addReference(id, ref_string, ip, port, expire)
+removeReference(id, ref_string)
+searchReference(id, ref_string)
+
+expireThread(){
+	foreach it mapReference {
+		foreach x mapIpAddress {
+			if(isExpired(x->expire) == true)
+				removeReference(it)
+		}
+	}
+}
+
+
+=================================================================================
+This directory contains some demonstrations for cxxtools.
+
+The examples are as minimal as possible to demonstrate simple usage-patterns.
+
+arg
+===
+Demonstration of template `cxxtools::Arg`.
+
+dir
+===
+Print contents of a directory. Try `./dir .`.
+
+dlloader
+========
+Load shared library and call a function. Useful to create plugins in your
+applications.
+
+getini
+======
+Read value from ini-file.
+
+Try `./getini test.ini sec1 value`
+
+hdstream
+========
+Just a little hexdumper. To print a hexdump of a file use `./hexdump filename`
+
+log
+===
+Demonstration of cxxtools-logging-library.
+
+It uses a configurationfile log.xml or log.properties to determine the amount of
+logging.
+
+A sample configuration file log.xml can be created with the command
+`cxxtools-config --logxml cxxtools >log.xml`.
+
+md5sum
+======
+Calculate md5sum of files. Try `./md5sum file1 file2`
+
+multifstream
+============
+Concatenate multipe files to stdout. Try `./multiifstream file1 file2`.
+
+netcat/netecho
+==============
+Demonstration of a simple network-server and -client.
+
+Netcat listens to a port (default 1234) and prints all input to stdout.
+
+Netecho connects to netcat and copies stdin to netcat.
+
+To try out enter `./netcat` in one terminal and then `./netcat <netcat.cpp`
+in another. Netcat prints the sourcecode of netcat.cpp. If netcat runs
+on another machine, you need to tell netcat the ip-address of the netcat-server
+with `./netcat -i host`.
+
+netio
+=====
+Network-performance tool.
+
+Netio has 2 modes: server and client. To enable server-mode start with option
+-s. It waits for a incoming connection on port 1234 (adjustable with -p).
+
+In client-mode you need to give netio the ip-address (or hostname) of the
+server with -i. The clients sends random data with different package-sizes to
+the server and computes the network-througput. It starts with 256 bytes and
+doubles until 64k. Each package-size is sent for 1 second (adjustable with -t).
+With -B you can specify a single fixed block-size.
+
+pipestream
+==========
+This demo shows, how to create a child-process, use a pipe to signal
+from child to parent and another pipe to send a datastream.
+
+pool
+====
+Demonstration of template pool. Example connectionpool. Useful for
+multithreaded applications.
+
+serialization/deseriaization
+============================
+Show how to convert C++ objects to json, xml or csv and back.
+
+`serialization` creates a vector of 2 C++ objects and depending on the command
+line option prints them as json, xml or csv.
+
+If called with option -x, the output is xml. Giving option -c prints csv.
+Without those, json is printed.
+
+The option -b formats the output nicely. It has no effect on csv.
+
+`deserialization` reads formatted input from stdin and converts them to C++. It
+expects the same list of objects as the `serialization` demo program prints. The
+formatting options `-x` and `-c` are also valid for `deserialization` to tell
+the process, what format it should read.
+
+To try the programs out, you can call:
+
+    ./serialization|./deserialization
+
+    ./serialization -x|./deserialization -x
+
+    ./serialization -c|./deserialization -c
+
+msgclient/msgserver
+===================
+This shows a little messaging client and server.
+
+The server starts and waits for a incoming connection. When a connection
+arrives it sends 2 messages to the client.
+
+The client connects on startup to the server and reads messages until the
+socket is closed.
+
+The messages are serialized using binary serialization. It is easy to send and
+receive more complex messages over a socket. It is easy to change the
+serialization format to xml or json using the suitable serializer and
+deserializer.

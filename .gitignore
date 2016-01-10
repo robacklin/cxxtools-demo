@@ -26,3 +26,12 @@
 *.exe
 *.out
 *.app
+
+afc_dsclient
+afc_dsserver
+afc_pipestream
+afc_rpcaddclient
+afc_rpcserver
+application3
+msgclient
+msgserver
